@@ -10,7 +10,6 @@ use warnings FATAL => 'all';
 our ($db, $admin, %conf, $html, %lang, @WEEKDAYS, @state_colors, @MONTHES, $SELF_URL);
 
 use Notepad;
-use Notepad::db::Notepad;
 use Abills::Defs;
 use Time::Local;
 use Abills::Base qw/_bp next_month date_inc days_in_month in_array date_diff/;
@@ -821,7 +820,6 @@ sub notepad_notes_sp {
 #**********************************************************
 
 sub notepad_show_sticker {
-  my $Notepad = Notepad->new($db, $admin, \%conf);
   my $list = $Notepad->get_sticker({COLS_NAME => 1});
   my $sticker_json;
 
@@ -868,7 +866,6 @@ sub notepad_show_sticker {
 =cut
 #***************************************************************
 sub notepad_sp {
-  my $Notepad = Notepad->new($db, $admin, \%conf);
   my $list = $Notepad->get_sticker({COLS_NAME => 1});
 
   my $table = $html->table( { width      => '100%',
