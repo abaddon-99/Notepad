@@ -825,8 +825,11 @@ sub notepad_show_sticker {
 
   if ($FORM{get_stickers} && $FORM{get_stickers}==1) {
     foreach my $line (@$list) {
-      $line->{top}="60px";
-      $line->{left}="1030px";
+      $line->{top} = "60px";
+      $line->{left} = "1030px";
+      $line->{index} = get_function_index('notepad_main');
+      $line->{sticker_title} = $lang{STICKER_TITLE};
+      $line->{sticker_text} = $lang{STICKER_TEXT};
       $sticker_json = JSON->new->encode($list);
     }
     print $sticker_json;

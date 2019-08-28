@@ -21,3 +21,5 @@ $lang{ITEM} = 'Пункт';
 
 $lang{NOTES} = 'Заметки';
 $lang{NOTE} = 'Заметка';
+$lang{STICKER_TITLE} = 'Введите заголовок',
+$lang{STICKER_TEXT} = 'Введите текст'

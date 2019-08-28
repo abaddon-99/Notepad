@@ -21,3 +21,5 @@ $lang{ITEM} = 'Item';
 
 $lang{NOTES} = 'Notes';
 $lang{NOTES} = 'Note';
+$lang{STICKER_TITLE} = 'Input title',
+$lang{STICKER_TEXT} = 'Input text'

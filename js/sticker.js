@@ -1,7 +1,7 @@
 var STICKIES = (function () {
     var openStickies = function openStickies() {
 
-            let ajax_arr = new Array();
+            let ajax_arr = [];
 
             $.ajax({
                 url: '/admin/index.cgi?get_index=notepad_show_sticker&header=2&ajax=1&get_stickers=1',
@@ -9,7 +9,6 @@ var STICKIES = (function () {
                     if(result) {
                         ajax_arr = JSON.parse(result);
                         for (let i=0; i<ajax_arr.length; i++){
-                            console.log(ajax_arr[i]);
                             createSticky(ajax_arr[i]);
                         }
                     }
@@ -17,7 +16,7 @@ var STICKIES = (function () {
             });
         },
         searchKey = function searchKey(array) {
-            let sticky_array = new Array();
+            let sticky_array = [];
             for (let i=0; i<array.length; i++){
                 if (array[i].match("sticky-")) sticky_array.push(array[i]) ;
             }
@@ -25,26 +24,30 @@ var STICKIES = (function () {
             return -1;
         },
         createSticky = function createSticky(data) {
-            console.log("CreateSticky");
             data = data || { id : data.id, top : "40px", left : "40px"   };
-            let arr = new Array();
-            let temp_arr = new Array();
+
+            if (data.subject == null){
+                data.subject = data.sticker_title;
+            }
+            if (data.text == null){
+                data.text = data.sticker_text;
+            }
+
+            let arr = [];
+            let temp_arr = [];
+
             for (let i = 0; i < localStorage.length; i++) {
                 arr.push(localStorage.key(i));
             }
             temp_arr = searchKey(arr);
-
             data.id = "sticky-"+data.id;
-            console.log(data.id);
             for (let i=0; i<temp_arr.length; i++){
-                if (data.id==temp_arr[i]){
+                if (data.id===temp_arr[i]){
                     let temp = JSON.parse(localStorage.getItem(data.id));
-                    console.log(temp);
                     data.top = temp.top;
                     data.left = temp.left;
                 }
             }
-            console.log(data);
             return $("<div />", {
                 "class" : "sticky",
                 'id' : data.id
@@ -67,7 +70,7 @@ var STICKIES = (function () {
                 })
                     .append($("<a />",{
                         html: "...",
-                        href: '/admin/index.cgi?index=247&chg='+data.id.slice(7)+'&MODULE=Notepad'
+                        href: '/admin/index.cgi?index='+data.index+'&chg='+data.id.slice(7)+'&MODULE=Notepad'
                     })))
                 .draggable({
                     handle : "div.sticky-header",
@@ -98,11 +101,9 @@ var STICKIES = (function () {
                     left: sticky.css("left")
             };
             localStorage.setItem(obj.id, JSON.stringify(obj));
-            sticky.find(".sticky-status").text("Saved");
         },
         markUnsaved = function markUnsaved() {
             var that = $(this), sticky = that.hasClass("sticky-content") ? that.parents("div.sticky") : that;
-            sticky.find(".sticky-status").text("Unsaved");
         };
     return {
         open   : openStickies,
