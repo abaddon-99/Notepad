@@ -18,6 +18,7 @@ use JSON qw/encode_json decode_json/;
 
 my $Notepad = Notepad->new($db, $admin, \%conf);
 my @STATUS = ($lang{ACTIVE}, $lang{PAUSED}, $lang{CLOSED});
+my @STICKER_STATUS = ($lang{STICKER_HIDE},$lang{STICKER_DISPLAY});
 
 my @REAL_WEEKDAYS = ();
 ($lang{HOLIDAY}, @REAL_WEEKDAYS) = (@WEEKDAYS); # Removed confusing first element
@@ -135,6 +136,15 @@ sub notepad_main {
 
     $TEMPLATE_NOTE{CHECKLIST} = notepad_checklist({ OUTPUT2RETURN => 1, NOTE_ID => $TEMPLATE_NOTE{ID} });
 
+    $TEMPLATE_NOTE{STICKER_STATUS} = $html->form_select(
+      "STATUS_ST",
+      {
+        SELECTED     => $TEMPLATE_NOTE{STATUS_ST},
+        SEL_ARRAY    => \@STICKER_STATUS,
+        ARRAY_NUM_ID => 1,
+        NO_ID        => 1
+      }),
+
     $html->tpl_show(_include('notepad_main_form', 'Notepad'),
       {
         %TEMPLATE_NOTE,
@@ -145,7 +155,6 @@ sub notepad_main {
     );
 
   }
-
   if ($can_assign_note_to_other_admin) {
 
     $html->tpl_show(_include('notepad_manager_filter_panel', 'Notepad'), {
@@ -856,9 +865,8 @@ sub notepad_show_sticker {
   print $table->show();
 
   $html->tpl_show(_include('notepad_sticker', 'Notepad'),{
-    ID            => $FORM{ID},
-    INDEX         => $index,
-
+    ID              => $FORM{ID},
+    INDEX           => $index,
   });
 
 }
@@ -874,14 +882,13 @@ sub notepad_sp {
   my $table = $html->table( { width      => '100%',
     caption    => $lang{NOTE},
     border     => 1,
-    title      => ["TITLE","TEXT"],
+    title      => [$lang{ST_TITLE},$lang{ST_TEXT}],
     cols_align => ['center', 'center'],
     pages      => 2,
     ID         => 1
   } );
 
   foreach my $line (@$list) {
-
     $table->addtd(
       $table->td($line->{subject},{ID => 'sticker_title_td'}),
       $table->td($line->{text},{ID => 'sticker_text_td'})

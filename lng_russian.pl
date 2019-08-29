@@ -21,5 +21,12 @@ $lang{ITEM} = 'Пункт';
 
 $lang{NOTES} = 'Заметки';
 $lang{NOTE} = 'Заметка';
+
+$lang{STICKER} = 'Стикер';
+$lang{ST_STATUS} = 'Статус стикера';
+$lang{ST_TITLE} = 'Заголовок';
+$lang{ST_TEXT} = 'Текст';
 $lang{STICKER_TITLE} = 'Введите заголовок',
-$lang{STICKER_TEXT} = 'Введите текст'
+$lang{STICKER_TEXT} = 'Введите текст',
+$lang{STICKER_DISPLAY} = 'Отображать',
+$lang{STICKER_HIDE} = 'Скрывать'

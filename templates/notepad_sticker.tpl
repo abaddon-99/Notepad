@@ -15,30 +15,12 @@
         box-shadow:3px 3px 10px rgba(0,0,0,0.45);
         -webkit-box-shadow:3px 3px 10px rgba(0,0,0,0.45);
         -moz-box-shadow:3px 3px 10px rgba(0,0,0,0.45);
-        background: #FFE440 !important;
+        background: #FFED73 !important; /*FFE440*/
         word-wrap: break-word;
         overflow: hidden;
     }
     .sticky-status{
         margin: auto;
-    }
-    .add-sticky {
-        cursor: default;
-        position:absolute;
-        top:1px;
-        left:1px;
-        font-size:200%;
-        background:#000;
-        color:#fff;
-        border:2px solid #fff;
-        border-radius:40px;
-        -webkit-border-radius:40px;
-        -moz-border-radius:40px;
-        text-align:center;
-        line-height:25px;
-        width:30px;
-        height:30px;
-        z-index: 1090;
     }
     .sticky-content {
         min-height:100px;
@@ -52,7 +34,7 @@
         box-shadow:0 3px 5px rgba(0,0,0,0.25);
         -webkit-box-shadow:0 3px 5px rgba(0,0,0,0.25);
         -moz-box-shadow:0 3px 5px rgba(0,0,0,0.25);
-        cursor: pointer;
+        cursor: move;
     }
     .sticky-status {
         color:#ccc;
@@ -61,5 +43,13 @@
     .sticky .title{
         padding: 5px;
         font-weight: bold;
+    }
+    .sticky-edit {
+        float:right;
+        cursor: pointer;
+        padding:1px 5px;
+        border-radius:5px;
+        -webkit-border-radius:5px;
+        -moz-border-radius:5px;
     }
 </style>

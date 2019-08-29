@@ -36,6 +36,13 @@
       </div>
 
       <div class='form-group'>
+        <label class='control-label col-md-2'>_{STICKER}_:</label>
+        <div class='col-md-10'>
+          %STICKER_STATUS%
+        </div>
+      </div>
+
+      <div class='form-group'>
         <label class='control-label col-md-2' for='SUBJECT'>_{SUBJECT}_:</label>
         <div class='col-md-10'>
           <input class='form-control' type='text' name='SUBJECT' id='SUBJECT' required='required' value='%SUBJECT%'/>

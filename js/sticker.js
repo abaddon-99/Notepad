@@ -26,6 +26,10 @@ var STICKIES = (function () {
         createSticky = function createSticky(data) {
             data = data || { id : data.id, top : "40px", left : "40px"   };
 
+            if (data.status_st === 0){
+                return null;
+            }
+
             if (data.subject == null){
                 data.subject = data.sticker_title;
             }
@@ -40,6 +44,7 @@ var STICKIES = (function () {
                 arr.push(localStorage.key(i));
             }
             temp_arr = searchKey(arr);
+
             data.id = "sticky-"+data.id;
             for (let i=0; i<temp_arr.length; i++){
                 if (data.id===temp_arr[i]){
@@ -57,21 +62,20 @@ var STICKIES = (function () {
                         "class" : "sticky-status",
                         click : saveSticky
                     }))
-                    .append($("<span />", {
-                        html : data.subject.substr(0,100),
-                        "class" : "title",
-                        keypress : markUnsaved
-                    }))
+                    .append($("<a />",{
+                        href: '/admin/index.cgi?index='+data.index+'&chg='+data.id.slice(7)+'&MODULE=Notepad'
+                    })
+                        .append($("<span />", {
+                            html : data.subject.substr(0,100),
+                            "class" : "title",
+                            keypress : markUnsaved
+                        })))
                 )
                 .append($("<div />", {
                     html : data.text.substr(0,280),
                     "class" : "sticky-content",
                     keypress : markUnsaved
-                })
-                    .append($("<a />",{
-                        html: "...",
-                        href: '/admin/index.cgi?index='+data.index+'&chg='+data.id.slice(7)+'&MODULE=Notepad'
-                    })))
+                }))
                 .draggable({
                     handle : "div.sticky-header",
                     stack : ".sticky",

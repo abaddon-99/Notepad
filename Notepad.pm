@@ -63,12 +63,13 @@ sub notes_list{
 
   $attr->{AID} ||= $self->{admin}{AID};
   delete $attr->{NOTE_STATUS} if ($attr->{NOTE_STATUS} && $attr->{NOTE_STATUS} eq 'ALL');
-
+  
   #ID,SUBJECT,STATUS,SHOW_AT,CREATED,PERIODIC_RULE_ID
   my $search_columns = [
     [ 'ID',                  'INT',   'n.id'                            ,1],
     [ 'SUBJECT',             'STR',   'n.subject'                       ,1],
     [ 'STATUS',              'INT',   'n.status'                        ,1],
+    [ 'STATUS_ST',           'TINYINT','n.status_st'                    ,1],
     [ 'SHOW_AT',             'DATE',  'n.show_at'                       ,1],
     [ 'NEW',                 'DATE',  'IF(n.show_at < NOW(), 1, 0) AS new', '(n.show_at < NOW()) AS new' ,1],
     [ 'TEXT',                'STR',   'n.text'                          ,1],
@@ -77,16 +78,16 @@ sub notes_list{
     [ 'CREATED',             'STR',   'n.create_date AS created'        ,1],
     ['HAVE_CHECKLIST',       'INT',   'IF(COUNT(ncl.id) > 0, 1,0) AS have_checklist', 1],
     [ 'AID',                 'INT',   'n.aid'                           ,1],
-    [ 'NAME',                'STR',   'IF(adm.name, adm.name, adm.id) AS name' ,1],
+    [ 'NAME',                'STR',   'IF(adm.name, adm.name, adm.id) AS name' ,1]
   ];
 
   if ($attr->{SHOW_ALL_COLUMNS}){
     map { $attr->{$_->[0]} = '_SHOW' unless exists $attr->{$_->[0]} } @$search_columns;
   }
-
+  
   my $WHERE =  $self->search_former($attr, $search_columns, {  WHERE => 1 } );
-
-
+  
+  
   $self->query( "SELECT $self->{SEARCH_FIELDS} n.id
               FROM notepad n
               LEFT JOIN notepad_reminders nr FORCE INDEX FOR JOIN (`PRIMARY`) ON ( n.id = nr.id )
@@ -102,7 +103,7 @@ sub notes_list{
   );
 
   return [] if $self->{errno};
-
+  
   return $self->{list} || [];
 }
 
@@ -200,17 +201,17 @@ sub notes_del{
 sub periodic_rules_list{
   my $self = shift;
   my ($attr) = @_;
-
+  
   delete $self->{COL_NAMES_ARR};
-
+  
   my $SORT = ($attr->{SORT}) ? $attr->{SORT} : 'id';
   my $DESC = ($attr->{DESC}) ? '' : 'DESC';
   my $PG = ($attr->{PG}) ? $attr->{PG} : 0;
   my $PAGE_ROWS = ($attr->{PAGE_ROWS}) ? $attr->{PAGE_ROWS} : 25;
-
+  
   $attr->{AID} ||= $self->{admin}{AID};
   delete $attr->{NOTE_STATUS} if ($attr->{NOTE_STATUS} && $attr->{NOTE_STATUS} eq 'ALL');
-
+  
   my $search_columns = [
     [ 'ID',          'INT',   'id'                    ,1],
     [ 'RULE_ID',     'INT',   'rule_id'               ,1],
@@ -219,17 +220,17 @@ sub periodic_rules_list{
     [ 'MONTH',       'INT',   'month'                 ,1],
     [ 'HOLIDAYS',    'INT',   'holidays'              ,1],
   ];
-
+  
   if ($attr->{SHOW_ALL_COLUMNS}){
     map { $attr->{$_->[0]} = '_SHOW' unless exists $attr->{$_->[0]} } @$search_columns;
   }
-
+  
   my $WHERE =  $self->search_former($attr, $search_columns,
     {
       WHERE => 1
     }
   );
-
+  
   $self->query( "SELECT $self->{SEARCH_FIELDS} id FROM notepad_reminders
    $WHERE
     ORDER BY $SORT $DESC LIMIT $PG, $PAGE_ROWS;", undef, {
@@ -237,10 +238,10 @@ sub periodic_rules_list{
       COLS_UPPER => 1,
       %{ $attr ? $attr : {}}}
   );
-
+  
   return [] if $self->{errno};
-
-
+  
+  
   return $self->{list};
 }
 
@@ -258,7 +259,7 @@ sub periodic_rules_list{
 #**********************************************************
 sub periodic_rules_info{
   my ($self, $id, $attr) = @_;
-
+  
   my $list = $self->periodic_rules_list( {
     ID               => $id,
     COLS_NAME        => 1,
@@ -266,7 +267,7 @@ sub periodic_rules_info{
     COLS_UPPER       => 1,
     %{ $attr // { } }
   } );
-
+  
   return $list->[0] || {};
 }
 
@@ -284,9 +285,9 @@ sub periodic_rules_info{
 sub periodic_rules_add{
   my $self = shift;
   my ($attr) = @_;
-
+  
   $self->query_add('notepad_reminders', $attr, { REPLACE => 1 });
-
+  
   return 1;
 }
 
@@ -304,9 +305,9 @@ sub periodic_rules_add{
 sub periodic_rules_del{
   my $self = shift;
   my ($attr) = @_;
-
+  
   $self->query_del('notepad_reminders', undef, $attr);
-
+  
   return 1;
 }
 
@@ -324,7 +325,7 @@ sub periodic_rules_del{
 sub periodic_rules_change{
   my $self = shift;
   my ($attr) = @_;
-
+  
   # Can save different rules with overlapping fields
   my @fields = qw(
     MINUTE
@@ -335,19 +336,19 @@ sub periodic_rules_change{
     YEAR
     HOLIDAYS
   );
-
-
+  
+  
   foreach (@fields){
     $attr->{$_} = (defined $attr->{$_}) ? "$attr->{$_}" : 0;
   };
-
+  
   $self->changes(
     {
       CHANGE_PARAM => 'ID',
       TABLE        => 'notepad_reminders',
       DATA         => $attr,
     });
-
+  
   return 1;
 }
 
@@ -364,12 +365,12 @@ sub periodic_rules_change{
 #**********************************************************
 sub checklist_rows_list{
   my ($self, $attr) = @_;
-
+  
   my $SORT = $attr->{SORT} || 'ncl.id';
   my $DESC = ($attr->{DESC}) ? 'DESC' : '';
   my $PG = $attr->{PG} || '0';
   my $PAGE_ROWS = $attr->{PAGE_ROWS} || 25;
-
+  
   my $search_columns = [
     ['ID',             'INT',        'ncl.id'                          ,1 ],
     ['NOTE_ID',        'INT',        'ncl.note_id'                     ,1 ],
@@ -381,7 +382,7 @@ sub checklist_rows_list{
     map { $attr->{$_->[0]} = '_SHOW' unless exists $attr->{$_->[0]} } @$search_columns;
   }
   my $WHERE =  $self->search_former($attr, $search_columns, { WHERE => 1 });
-
+  
   $self->query( "SELECT $self->{SEARCH_FIELDS} ncl.id
    FROM notepad_checklist_rows ncl
    $WHERE ORDER BY $SORT $DESC LIMIT $PG, $PAGE_ROWS;", undef, {
@@ -407,9 +408,9 @@ sub checklist_rows_list{
 #**********************************************************
 sub checklist_rows_info{
   my ($self, $id) = @_;
-
+  
   my $list = $self->checklist_rows_list( { COLS_NAME => 1, ID => $id, SHOW_ALL_COLUMNS => 1, COLS_UPPER => 1 } );
-
+  
   return $list->[0] || {};
 }
 
@@ -427,9 +428,9 @@ sub checklist_rows_info{
 sub checklist_rows_add{
   my $self = shift;
   my ($attr) = @_;
-
+  
   $self->query_add('notepad_checklist_rows', $attr, { REPLACE => 1 });
-
+  
   return 1;
 }
 
@@ -447,9 +448,9 @@ sub checklist_rows_add{
 sub checklist_rows_del{
   my $self = shift;
   my ($attr) = @_;
-
+  
   $self->query_del('notepad_checklist_rows', undef, $attr);
-
+  
   return 1;
 }
 
@@ -467,16 +468,16 @@ sub checklist_rows_del{
 sub checklist_rows_change{
   my $self = shift;
   my ($attr) = @_;
-
+  
   $attr->{STATE} = (defined $attr->{STATE} && $attr->{STATE}) ? 1 : '0';
-
+  
   $self->changes(
     {
       CHANGE_PARAM => 'ID',
       TABLE        => 'notepad_checklist_rows',
       DATA         => $attr,
     });
-
+  
   return 1;
 }
 
@@ -524,7 +525,7 @@ sub show_reminders_list{
 #    POSIX->import();
 #    $DATE = POSIX::strftime("%d-%m-%Y %H:%M:%S", localtime);
 #  }
-
+  
   return $self->notes_list( {
       SHOW_ALL_COLUMNS => 1,
       COLS_UPPER       => $attr->{COLS_UPPER} || 1,
@@ -687,7 +688,7 @@ sub get_sticker {
   my ($attr) = @_;
 
   $self->query(
-    "SELECT id,subject,text FROM notepad",
+    "SELECT id,subject,text,status_st FROM notepad",
     undef, $attr
   );
 

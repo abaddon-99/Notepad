@@ -21,5 +21,11 @@ $lang{ITEM} = 'Пункт';
 
 $lang{NOTES} = 'Нагадування';
 $lang{NOTE} = 'Нагадування';
+$lang{STICKER} = 'Стікер';
+$lang{ST_STATUS} = 'Статус стікера';
+$lang{ST_TITLE} = 'Заголовок';
+$lang{ST_TEXT} = 'Текст';
 $lang{STICKER_TITLE} = 'Введіть заголовок',
-$lang{STICKER_TEXT} = 'Введіть текст'
+$lang{STICKER_TEXT} = 'Введіть текст',
+$lang{STICKER_DISPLAY} = 'Відображати',
+$lang{STICKER_HIDE} = 'Приховувати'
