@@ -67,7 +67,6 @@ sub notepad_main {
 
   if ($FORM{add}) {
     $check_notepad_form_params->();
-
     $Notepad->notes_add({ %FORM });
     $show_add_form = !show_result($Notepad, $lang{ADDED});
 
@@ -88,7 +87,6 @@ sub notepad_main {
   elsif ($FORM{chg}) {
 
     my $tp_info = $Notepad->notes_info($FORM{chg});
-
     if (!_error_show($Notepad)) {
       $html->message('info', $lang{INFO}, "$lang{CHANGING}");
       %TEMPLATE_NOTE = %{$tp_info};
@@ -139,7 +137,7 @@ sub notepad_main {
     $TEMPLATE_NOTE{STICKER_STATUS} = $html->form_select(
       "STATUS_ST",
       {
-        SELECTED     => $TEMPLATE_NOTE{STATUS_ST},
+        SELECTED     => $FORM{STATUS_ST}||$TEMPLATE_NOTE{STATUS_ST},
         SEL_ARRAY    => \@STICKER_STATUS,
         ARRAY_NUM_ID => 1,
         NO_ID        => 1
@@ -829,7 +827,7 @@ sub notepad_notes_sp {
 #**********************************************************
 
 sub notepad_show_sticker {
-  my $list = $Notepad->get_sticker({COLS_NAME => 1});
+  my $list = $Notepad->get_sticker({COLS_NAME => 1, AID => $admin->{AID}});
   my $sticker_json;
 
   if ($FORM{get_stickers} && $FORM{get_stickers}==1) {
@@ -848,7 +846,7 @@ sub notepad_show_sticker {
   my $table = $html->table( { width      => '100%',
     caption    => $lang{NOTE},
     border     => 1,
-    title      => ["TITLE","TEXT"],
+    title      => [$lang{ST_TITLE},$lang{ST_TEXT}],
     cols_align => ['center', 'center'],
     pages      => 2,
     ID         => 1
@@ -877,7 +875,7 @@ sub notepad_show_sticker {
 =cut
 #***************************************************************
 sub notepad_sp {
-  my $list = $Notepad->get_sticker({COLS_NAME => 1});
+  my $list = $Notepad->get_sticker({COLS_NAME => 1, AID => $admin->{AID}});
 
   my $table = $html->table( { width      => '100%',
     caption    => $lang{NOTE},
